@@ -90,7 +90,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 @Autonomous(name="Robot: Auto Drive By Gyro", group="Robot")
 @Disabled
-public class RobotAutoDriveByGyro_Linear extends LinearOpMode {
+public class    RobotAutoDriveByGyro_Linear extends LinearOpMode {
 
     /* Declare OpMode members. */
     private DcMotor         leftDrive   = null;
