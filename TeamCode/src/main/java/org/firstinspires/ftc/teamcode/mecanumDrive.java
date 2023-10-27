@@ -23,8 +23,6 @@ public class mecanumDrive extends LinearOpMode {
         DcMotor backRightMotor = hardwareMap.dcMotor.get("rightRear");
         Servo axon = hardwareMap.servo.get("axon");
 
-        boolean axonRotated = false;
-
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
         // reverse the left side instead.
@@ -34,10 +32,18 @@ public class mecanumDrive extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
+        boolean axonRotated = false;
+
+        // change this to true when appropriate...
+        boolean reverseAxonDirection = false;
+
+        // change this to the right value through trial and error...
+        // this value should be less than 0.33333333...
+        double initialInclination = 0.0;
 
         while (opModeIsActive()) {
-            // used to be axon.setPower(((double) gamepad2.right_stick_y));
-            axon.setPosition(0);
+            // is this initial position sensible?
+            axon.setPosition(reverseAxonDirection? (1-initialInclination):initialInclination);
 
             double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
@@ -64,14 +70,13 @@ public class mecanumDrive extends LinearOpMode {
 
             if (gamepad1.y) {
                 // will this turn in the right direction?
-                // how do I account for its initial position?
-                // I assumed here that the maximum travel of our axon is 180 degrees (which is the default)...
+                // I assumed here that the maximum travel of our axon is 270 degrees...
                 // is it okay to use the 'y' button of the controller?
                 if (axonRotated) {
-                    axon.setPosition(0);
+                    axon.setPosition(reverseAxonDirection? (1-initialInclination):initialInclination);
                     axonRotated = false;
                 } else {
-                    axon.setPosition(1);
+                    axon.setPosition(reverseAxonDirection? (1 - initialInclination - 0.6666666666):(initialInclination + 0.6666666666));
                     axonRotated = true;
                 }
             }
