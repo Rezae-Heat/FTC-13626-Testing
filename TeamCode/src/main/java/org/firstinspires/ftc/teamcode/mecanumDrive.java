@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
@@ -20,9 +21,9 @@ public class mecanumDrive extends LinearOpMode {
         DcMotor backLeftMotor = hardwareMap.dcMotor.get("leftRear");
         DcMotor frontRightMotor = hardwareMap.dcMotor.get("rightFront");
         DcMotor backRightMotor = hardwareMap.dcMotor.get("rightRear");
-        CRServo axon = hardwareMap.crservo.get("axon");
+        Servo axon = hardwareMap.servo.get("axon");
 
-
+        boolean axonRotated = false;
 
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
@@ -35,7 +36,8 @@ public class mecanumDrive extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            axon.setPower(((double) gamepad2.right_stick_y));
+            // used to be axon.setPower(((double) gamepad2.right_stick_y));
+            axon.setPosition(0);
 
             double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
@@ -60,6 +62,19 @@ public class mecanumDrive extends LinearOpMode {
             frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+            if (gamepad1.y) {
+                // will this turn in the right direction?
+                // how do I account for its initial position?
+                // I assumed here that the maximum travel of our axon is 180 degrees (which is the default)...
+                // is it okay to use the 'y' button of the controller?
+                if (axonRotated) {
+                    axon.setPosition(0);
+                    axonRotated = false;
+                } else {
+                    axon.setPosition(1);
+                    axonRotated = true;
+                }
+            }
 
         }
     }
