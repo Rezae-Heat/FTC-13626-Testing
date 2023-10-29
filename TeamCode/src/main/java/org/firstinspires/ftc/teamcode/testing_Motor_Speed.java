@@ -24,7 +24,7 @@ public class testing_Motor_Speed extends LinearOpMode {
         DcMotorEx backRightMotor = (DcMotorEx) hardwareMap.dcMotor.get("rightRear");
         CRServo axon = hardwareMap.crservo.get("axon");
         DcMotorEx frontLeftMotor = (DcMotorEx) hardwareMap.dcMotor.get("lefFront");
-
+// add motors as required
 
 
         // Reverse the right side motors. This may be wrong for your setup.
@@ -42,11 +42,14 @@ public class testing_Motor_Speed extends LinearOpMode {
            frontRightMotor.setPower(gamepad1.right_stick_y);
            backLeftMotor.setPower(gamepad2.left_stick_y);
            backRightMotor.setPower(gamepad2.right_stick_y);
+           axon.setPower(gamepad1.left_stick_x);
+
 
            telemetry.addData("front left speed", frontLeftMotor.getVelocity());
            telemetry.addData("front right speed", frontRightMotor.getVelocity());
            telemetry.addData("back left speed", backLeftMotor.getVelocity());
            telemetry.addData("back right speed", backRightMotor.getVelocity());
+           telemetry.addData("Axon direction", axon.getDirection());
 
 
 
