@@ -19,8 +19,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
+import java.security.cert.Extension;
+
 @TeleOp
-public class teleOP1 extends LinearOpMode {
+public class ftclib_teleop extends LinearOpMode {
     @Override
 
     public void runOpMode() throws InterruptedException {
@@ -28,14 +30,14 @@ public class teleOP1 extends LinearOpMode {
         // Declare our motors
         // Make sure your ID's match your configuration
         // dt motors below
-        DcMotorEx frontLeftMotor = (DcMotorEx) hardwareMap.dcMotor.get("leftFront");
-        DcMotorEx backLeftMotor = (DcMotorEx) hardwareMap.dcMotor.get("leftRear");
-        DcMotorEx frontRightMotor = (DcMotorEx) hardwareMap.dcMotor.get("rightFront");
-        DcMotorEx backRightMotor = (DcMotorEx) hardwareMap.dcMotor.get("rightRear");
+        MotorEx frontLeftMotor = new MotorEx(hardwareMap,"leftFront", Motor.GoBILDA.RPM_435);
+        MotorEx rearLeftMotor = new MotorEx(hardwareMap,"leftRear", Motor.GoBILDA.RPM_435);
+        MotorEx frontRightMotor = new MotorEx(hardwareMap,"rightFront", Motor.GoBILDA.RPM_435);
+        MotorEx rearRightMotor = new MotorEx(hardwareMap,"rightRear", Motor.GoBILDA.RPM_435);
 // slide motors below
-        MotorEx rightspool = new MotorEx(hardwareMap, "rightspool");
+        MotorEx rightspool = new MotorEx(hardwareMap, "rightspool",537.6,340);
         rightspool.setInverted(true);
-        MotorEx leftspool = new MotorEx(hardwareMap, "leftspool");
+        MotorEx leftspool = new MotorEx(hardwareMap, "leftspool",537.6,340);
 
 // Intake Motors below
         DcMotorEx intake = (DcMotorEx) hardwareMap.dcMotor.get("Intake");
@@ -46,7 +48,7 @@ public class teleOP1 extends LinearOpMode {
         ServoEx leftElbow = new SimpleServo(
                 hardwareMap, "leftElbow", 0, 255);
         ServoEx wrist = new SimpleServo(
-                hardwareMap, "wrist", 0, 360);
+                hardwareMap, "wrist", 0, 270);
         ServoEx gripper = new SimpleServo(
                 hardwareMap, "claw", 0, 300);
 
@@ -66,49 +68,77 @@ public class teleOP1 extends LinearOpMode {
             //Max slide extension = 2350
             //mid slide position = 1750
             //low slide position = 1300
-            int MAX_SLIDE_EXTENSION = -2350;
-            int MID_SLIDE_EXTENSION = -1750;
-            int MIN_SLIDE_EXTENSION = -1300;
 
-                        // set the run mode
-                        leftspool.setRunMode(Motor.RunMode.PositionControl);
-                        rightspool.setRunMode(Motor.RunMode.PositionControl);
+
+            // set the run mode
+            leftspool.setRunMode(Motor.RunMode.PositionControl);
+            rightspool.setRunMode(Motor.RunMode.PositionControl);
 
             // set and get the position coefficient
-                        leftspool.setPositionCoefficient(0.05);
-                       // rightspool.setPositionCoefficient(0.05);
-                        double kP = leftspool.getPositionCoefficient();
+            leftspool.setPositionCoefficient(0.05);
+            rightspool.setPositionCoefficient(0.05);
+
+             int MAX_SLIDE_EXTENSION = -2000;
+             int MID_SLIDE_EXTENSION = -1500;
+             int MIN_SLIDE_EXTENSION = -750;
+             int R_LOW_SLIDE_EXTENSION = -20;
+             int L_lOW_SLIDE_EXTENSION = -40;
+             int SLIDE_Extension_LEFT = 0;
+             int SLIDE_EXTENSION_RIGHT = 0;
+             leftspool.setTargetPosition(SLIDE_Extension_LEFT);
+             rightspool.setTargetPosition(SLIDE_EXTENSION_RIGHT);
+             if (gamepad2.dpad_down) {
+                 SLIDE_Extension_LEFT = L_lOW_SLIDE_EXTENSION;
+                 SLIDE_EXTENSION_RIGHT = R_LOW_SLIDE_EXTENSION;
+                 break;
+             }
+             if (gamepad2.dpad_left) {
+                 SLIDE_Extension_LEFT = MIN_SLIDE_EXTENSION;
+                 SLIDE_EXTENSION_RIGHT = MIN_SLIDE_EXTENSION;
+                 break;
+
+             }
+
+         }
+
+
+            leftspool.set(0.2);
+            rightspool.set(0.2);
+            while (!leftspool.atTargetPosition()) {
+                leftspool.set(0.1);
+            }
+            while (!rightspool.atTargetPosition()) {
+                rightspool.set(0.1);
+            }
+
+            leftspool.stopMotor(); // stop the motor
+            rightspool.stopMotor();
 
 
 
             // set the target position
-           if (gamepad2.x){
-               //leftspool.setTargetPosition(0);
-               //rightspool.setTargetPosition(0);
-               leftElbow.turnToAngle(18);
-               rightElbow.turnToAngle(42); // right elbow offset value leftelbow + 24 degrees
-               wrist.turnToAngle(350);
-               gripper.turnToAngle(250);
+            if (gamepad2.x){
 
-           }
+                leftElbow.turnToAngle(20);
+                rightElbow.turnToAngle(44); // right elbow offset value leftelbow + 24 degrees
+                gripper.turnToAngle(0);
+
+            }
             else if (gamepad2.a) {
-                //leftspool.setTargetPosition(MIN_SLIDE_EXTENSION);
-              // rightspool.setTargetPosition(MIN_SLIDE_EXTENSION); // an integer representing
+                // an integer representing
                 // desired tick count
-               leftElbow.turnToAngle(60);
-               rightElbow.turnToAngle(84);
+                leftElbow.turnToAngle(60);
+                rightElbow.turnToAngle(84);
             }
             else if(gamepad2.b){
-                //leftspool.setTargetPosition(MID_SLIDE_EXTENSION);
-              // rightspool.setTargetPosition(MID_SLIDE_EXTENSION);
-               leftElbow.turnToAngle(120);
-               rightElbow.turnToAngle(144);
+
+                leftElbow.turnToAngle(120);
+                rightElbow.turnToAngle(144);
             }
             else if (gamepad2.y){
-                //leftspool.setTargetPosition(MAX_SLIDE_EXTENSION);
-              // rightspool.setTargetPosition(MAX_SLIDE_EXTENSION);
-               leftElbow.turnToAngle(200);
-               rightElbow.turnToAngle(184);
+
+                leftElbow.turnToAngle(200);
+                rightElbow.turnToAngle(184);
             }
             if (leftspool.getCurrentPosition() < 20){
                 wrist.turnToAngle(20);
@@ -117,25 +147,9 @@ public class teleOP1 extends LinearOpMode {
 
             }
 
-            leftspool.set(0.2);
-            rightspool.set(0.2);
-
-            // set the tolerance
-                        leftspool.setPositionTolerance(20);
-                        //rightspool.setPositionTolerance(20);// allowed maximum error
-
-            // perform the control loop
-                        while (!leftspool.atTargetPosition()) {
-                            leftspool.set(0.10);
-                        }
-                        while(!rightspool.atTargetPosition()){
-                            rightspool.set(0.10);
-                        }
-                        leftspool.stopMotor(); // stop the motor
-                        rightspool.stopMotor();
 
 
-                        // Slide programming end
+            // Slide programming end
             // Transfer system
 
 // Intake programming start
@@ -159,16 +173,14 @@ public class teleOP1 extends LinearOpMode {
             double backRightPower = (y + x - rx) / denominator;
             double speedMod =1.25;  // only for testing purposes - not final driver configuration
 
-            frontLeftMotor.setPower(frontLeftPower*speedMod);
-            backLeftMotor.setPower(backLeftPower*speedMod);
-            frontRightMotor.setPower(frontRightPower*speedMod);
-            backRightMotor.setPower(backRightPower*speedMod);
+            frontLeftMotor.set(frontLeftPower*speedMod);
+            rearLeftMotor.set(backLeftPower*speedMod);
+            frontRightMotor.set(frontRightPower*speedMod);
+            rearRightMotor.set(backRightPower*speedMod);
             double totalCurrentDT = frontLeftMotor.getCurrentPosition();
 
-            frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-            backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+          frontLeftMotor.setInverted(true);
+          rearLeftMotor.setInverted(true);
 
 
 
@@ -177,13 +189,14 @@ public class teleOP1 extends LinearOpMode {
             telemetry.addData("leftspool",leftspool.getCurrentPosition());
             telemetry.addData("leftelbow position",leftElbow.getAngle(AngleUnit.DEGREES));
             telemetry.addData("rightelbow position",rightElbow.getAngle(AngleUnit.DEGREES));
-            double totalROBOTCUrrent = frontLeftMotor.getCurrent(CurrentUnit.AMPS) +
+            telemetry.update();
+           /* double totalROBOTCUrrent = frontLeftMotor.getCurrent(CurrentUnit.AMPS) +
                     frontRightMotor.getCurrent(CurrentUnit.AMPS)+
                     backLeftMotor.getCurrent(CurrentUnit.AMPS)+
                     backRightMotor.getCurrent(CurrentUnit.AMPS);
-            telemetry.addData("total dt current draw",totalROBOTCUrrent);
-            telemetry.update();
+            telemetry.addData("total dt current draw",totalROBOTCUrrent);*/
+
 
         }
     }
-}
+
