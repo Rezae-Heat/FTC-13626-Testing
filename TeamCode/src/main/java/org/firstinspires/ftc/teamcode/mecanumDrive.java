@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -22,12 +23,6 @@ public class mecanumDrive extends LinearOpMode {
         DcMotor frontRightMotor = hardwareMap.dcMotor.get("rightFront");
         DcMotor backRightMotor = hardwareMap.dcMotor.get("rightRear");
         Servo axon = hardwareMap.servo.get("axon");
-
-        // Reverse the right side motors. This may be wrong for your setup.
-        // If your robot moves backwards when commanded to go forwards,
-        // reverse the left side instead.
-        // See the note about this earlier on this page.
-
 
         waitForStart();
 
@@ -57,16 +52,20 @@ public class mecanumDrive extends LinearOpMode {
             double backLeftPower = (y - x + rx) / denominator;
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
-            double speedMod = gamepad1.right_trigger;
+            double speedMod = gamepad1.right_trigger; // only for testing purposes - not final driver configuration
+
             frontLeftMotor.setPower(frontLeftPower*speedMod);
             backLeftMotor.setPower(backLeftPower*speedMod);
             frontRightMotor.setPower(frontRightPower*speedMod);
             backRightMotor.setPower(backRightPower*speedMod);
+            double totalCurrentDT = frontLeftMotor.getCurrentPosition();
 
-            frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-            backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-            frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+            frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+            backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
             if (gamepad1.y) {
                 // will this turn in the right direction?
