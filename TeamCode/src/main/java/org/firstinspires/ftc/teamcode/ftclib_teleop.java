@@ -21,7 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
 import java.security.cert.Extension;
 
-@TeleOp
+
 public class ftclib_teleop extends LinearOpMode {
     @Override
 

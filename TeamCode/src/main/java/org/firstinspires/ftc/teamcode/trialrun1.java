@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
-@TeleOp
+
 public class trialrun1 extends LinearOpMode {
     @Override
 

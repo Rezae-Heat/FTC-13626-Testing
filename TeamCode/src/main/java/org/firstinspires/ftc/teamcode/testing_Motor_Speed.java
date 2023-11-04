@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
-@TeleOp
+
 public class testing_Motor_Speed extends LinearOpMode {
 
     @Override

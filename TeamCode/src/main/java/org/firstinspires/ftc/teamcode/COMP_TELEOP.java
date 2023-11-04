@@ -2,15 +2,19 @@ package org.firstinspires.ftc.teamcode;
 
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
+
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
+
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
-@TeleOp
+@TeleOp (group = "CompTELEOP",name = "Regionals_MANUAL_TELEOP")
 public class COMP_TELEOP extends OpMode {
     private DcMotorEx leftspool = null;
     private DcMotorEx rightspool = null;
@@ -22,12 +26,12 @@ public class COMP_TELEOP extends OpMode {
 
     private DcMotorEx intake;
 
-    private ServoEx rightElbow;
-    private ServoEx leftElbow;
-    private ServoEx wrist;
-    private ServoEx gripper;
+    private CRServo rightElbow;
+    private CRServo leftElbow;
+    private CRServo wrist;
+    private CRServo gripper;
     private ServoImplEx drone;
-    private ServoEx latch;
+    private CRServo latch;
 
 
     public static final int MAX_SLIDE_VELOCITY = 2000;
@@ -35,6 +39,19 @@ public class COMP_TELEOP extends OpMode {
     public static final int SLIDE_HIGH = 2000;
     public static final int SLIDE_MID = 1200;
     public static final int SLIDE_LOW = 400;
+
+@Override
+public void init_loop() {
+        leftspool.setMotorEnable();
+        rightspool.setMotorEnable();
+
+        intake.setMotorEnable();
+
+        frontLeftMotor.setMotorEnable();
+        frontRightMotor.setMotorEnable();
+        backLeftMotor.setMotorEnable();
+        backRightMotor.setMotorEnable();
+    }
 
 @Override
 public void init() {
@@ -47,30 +64,35 @@ public void init() {
     frontRightMotor = hardwareMap.get(DcMotorEx.class, "rightFront");
     backRightMotor = hardwareMap.get(DcMotorEx.class, "rightRear");
 
-    intake = hardwareMap.get(DcMotorEx.class, "rightRear");
+    intake = hardwareMap.get(DcMotorEx.class, "intake");
 
     rightspool.setDirection(DcMotorEx.Direction.FORWARD);
     leftspool.setDirection(DcMotorEx.Direction.REVERSE);
     leftspool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     rightspool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-    ServoEx rightElbow = new SimpleServo(
+   /* ServoEx rightElbow = new SimpleServo(
             hardwareMap, "rightElbow", 0, 255);
     rightElbow.setInverted(true);
     ServoEx leftElbow = new SimpleServo(
-            hardwareMap, "leftElbow", 0, 255);
-    ServoEx wrist = new SimpleServo(
-            hardwareMap, "wrist", 0, 270);
-    ServoEx gripper = new SimpleServo(
-            hardwareMap, "claw", 0, 300);
-    ServoEx latch = new SimpleServo(
-            hardwareMap, "latch", 0, 270);
+            hardwareMap, "leftElbow", 0, 255);*/
+    rightElbow = hardwareMap.get(CRServo.class,"rightElbow");
+    leftElbow = hardwareMap.get(CRServo.class,"leftElbow");
+    //ServoEx wrist = new SimpleServo(
+           // hardwareMap, "wrist", 0, 270);
+    wrist = hardwareMap.get(CRServo.class,"wrist");
+    gripper = hardwareMap.get(CRServo.class,"claw");
+   // ServoEx latch = new SimpleServo(
+       //     hardwareMap, "latch", 0, 270);
+    latch = hardwareMap.get(CRServo.class,"latch");
 
     ServoImplEx drone = (ServoImplEx) hardwareMap.servo.get("drone");
+    //telemetry.addLine("Ready to Rock n Roll")
 }
 
 @Override
 public void loop() {
+
     //</Slides>
     if(gamepad2.dpad_up) {
         leftspool.setTargetPosition(SLIDE_HIGH);
@@ -90,7 +112,18 @@ public void loop() {
 
         leftspool.setVelocity(MAX_SLIDE_VELOCITY);
         rightspool.setVelocity(MAX_SLIDE_VELOCITY);
-    } else {
+    }
+    else if (gamepad2.dpad_left){
+        leftspool.setTargetPosition(SLIDE_MID);
+        rightspool.setTargetPosition(SLIDE_MID);
+
+        leftspool.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightspool.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftspool.setVelocity(MAX_SLIDE_VELOCITY);
+        rightspool.setVelocity(MAX_SLIDE_VELOCITY);
+    }
+    else {
         leftspool.setVelocity(0);
         rightspool.setVelocity(0);
     }
@@ -101,7 +134,7 @@ public void loop() {
 
 
     //<Drive code>
-    double y = gamepad1.left_stick_y;// Remember, Y stick value is reversed
+    double y = - gamepad1.left_stick_y;// Remember, Y stick value is reversed
     double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
     double rx = gamepad1.right_stick_x; //gamepad1.right_stick_x;
 
@@ -128,27 +161,101 @@ public void loop() {
 //</Drive code>
 
     // Intake
-        intake.setPower(gamepad2.left_stick_y / 2);
+        intake.setPower(gamepad2.left_stick_y / 2); // brings down intake speed to 1500 rpm
 
         //
+
+    /*ServoEx rightElbow = new SimpleServo(
+            hardwareMap, "rightElbow", 0, 255);
+    rightElbow.setInverted(true);
+        ServoEx leftElbow = new SimpleServo(
+            hardwareMap, "leftElbow", 0, 255);*/
+    rightElbow = hardwareMap.get(CRServo.class,"rightElbow");
+    leftElbow = hardwareMap.get(CRServo.class,"leftElbow");
+
+    leftElbow.setPower(-gamepad2.right_stick_x /2);
+    rightElbow.setPower(gamepad2.right_stick_x /2);
+    //ServoEx wrist = new SimpleServo(
+            //hardwareMap, "wrist", 0, 270);
+    wrist = hardwareMap.get(CRServo.class,"wrist");
+    wrist.setPower(gamepad2.right_stick_y);
+    gripper = hardwareMap.get(CRServo.class,"claw");
+    gripper.setPower(gamepad2.left_stick_y);
+   // ServoEx latch = new SimpleServo(
+          //  hardwareMap, "latch", 0, 270);
+    latch = hardwareMap.get(CRServo.class,"latch");
+    ServoEx drone = new SimpleServo(
+            hardwareMap, "drone", 0, 270);
+    
+    //telemetry.addLine("Ready to Rock n Roll")
     // Drone
-    if (gamepad2.right_bumper) {
+    if (gamepad1.right_bumper) {
         drone.setPosition(0.25);
     }
         //
     // latch
-        if (gamepad2.x){
-        latch.turnToAngle(25);
-        }
-        if (gamepad2.y){
-            latch.turnToAngle(90);
-        }
+   latch.setPower(-gamepad2.right_trigger);
+    latch.setPower(gamepad2.left_trigger);
+    // latch
+
+    // transfer system
+
+
+        //leftElbow.setInverted(true);
+       // wrist.setInverted(true);
+      //  if (gamepad2.a){ // Intake position
+           // 0 the wrist at intake position - back end of robot
+          //  leftElbow.turnToAngle(0);
+            //rightElbow.turnToAngle(5);
+           // if ((leftElbow.getAngle() == 0)) {
+
+                //wrist.turnToAngle(0);
+            //}
+            // rightElbow.turnToAngle(0);
+        //}
+       // if (gamepad2.x){ // transfer position
+
+           // leftElbow.turnToAngle(100);
+
+
+            //rightElbow.turnToAngle(100);
+        //}
+    //if (gamepad2.y) { // mid scoring
+       // wrist.turnToAngle(140);
+        //leftElbow.turnToAngle(140);
+        //rightElbow.turnToAngle(140);
+  //  }
+   // wrist.setPower(gamepad2.right_stick_y);
+
+   // if (gamepad2.b) { // high scoring
+        //wrist.turnToAngle(90);
+        //leftElbow.turnToAngle(124);
+        //rightElbow.turnToAngle(100);
+   // }
+
+    // gripper
+
+    /*if(gamepad2.left_stick_button){
+        gripper.turnToAngle(65);
+    }
+    if(gamepad2.right_stick_button){
+        gripper.turnToAngle(45);
+    }*/
+
+    //gripper.setPower(gamepad2.left_stick_x/1.25);
+    //telemetry.addLine("POINTS TIME");
+
+
 
 }
+
+
 @Override
 public void stop(){
     leftspool.setMotorDisable();
     rightspool.setMotorDisable();
+
+    intake.setMotorDisable();
 
     frontLeftMotor.setMotorDisable();
     frontRightMotor.setMotorDisable();

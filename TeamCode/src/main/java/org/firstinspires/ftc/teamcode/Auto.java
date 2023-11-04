@@ -1,3 +1,5 @@
+package org.firstinspires.ftc.teamcode;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -25,12 +27,12 @@ public class Auto extends LinearOpMode {
 
         waitForStart();
 
-        leftFront.setPower(-0.5);
+        leftFront.setPower(0.5);
         leftRear.setPower(-0.5);
         rightFront.setPower(-0.5);
-        rightRear.setPower(-0.5);
+        rightRear.setPower(0.5);
 
-        double t = 5000;  // a parameter (in ms) to be optimized through trial and error.
+        double t = 2000;  // a parameter (in ms) to be optimized through trial and error.
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         telemetry.addData("Status", "Running");

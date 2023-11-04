@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 
 import com.qualcomm.robotcore.hardware.ServoImplEx;
-@TeleOp
+
 public class basic_teleop extends OpMode {
     private DcMotorEx leftspool;
     private DcMotorEx rightspool;
