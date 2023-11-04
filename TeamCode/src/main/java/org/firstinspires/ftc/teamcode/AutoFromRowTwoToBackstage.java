@@ -6,6 +6,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+// Some important notes for my teammates:
+// you guys should tune the duration parameters through trial and error;
+// and you guys should also insert the code for automatic transfer and release (where it is indicated down there to do so).
+// good luck with your matches!
+
 @Autonomous
 class AutoFromRowTwoToBackstage extends LinearOpMode {
     @Override
@@ -68,7 +73,7 @@ class AutoFromRowTwoToBackstage extends LinearOpMode {
 
         // insert here the code for automatic transfer and dropping.
 
-        double MovementFourDuration = 2000;
+        double MovementFourDuration = 2000;  // this duration parameter (in ms) should be tuned through trial and error;
         timer.reset();
 
         leftFront.setPower(-0.5);
