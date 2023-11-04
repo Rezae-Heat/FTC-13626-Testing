@@ -203,10 +203,12 @@ public class AUTOMATED_COMP_TELEOP extends OpMode {
 
 
         leftElbow.setInverted(true);
+        rightElbow.setInverted(true);
         wrist.setInverted(true);
         if (gamepad2.a) { // Intake position
             //0 the wrist at intake position - back end of robot
             leftElbow.turnToAngle(0);
+            rightElbow.turnToAngle(0);
             //rightElbow.turnToAngle(5);
             wrist.turnToAngle(0); // turn in further inwards
 
