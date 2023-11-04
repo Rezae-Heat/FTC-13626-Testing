@@ -17,12 +17,12 @@ public class STRAFE_BLUE extends LinearOpMode {
         DcMotor leftRear = hardwareMap.get(DcMotor.class, "leftRear");
         DcMotor rightRear = hardwareMap.get(DcMotor.class, "rightRear");
 
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftRear.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        rightRear.setDirection(DcMotor.Direction.FORWARD);
 
-        telemetry.addData("Status", "Initialized");
+        telemetry.addData("Status", "Initialized and Waiting");
         telemetry.update();
 
         waitForStart();

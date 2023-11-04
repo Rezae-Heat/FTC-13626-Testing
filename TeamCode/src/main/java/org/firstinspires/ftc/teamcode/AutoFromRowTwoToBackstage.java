@@ -4,14 +4,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous
-public class Auto extends LinearOpMode {
-
+class AutoFromRowTwoToBackstage extends LinearOpMode {
     @Override
-    public void runOpMode() throws InterruptedException {
-
+    public void runOpMode() {
         DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         DcMotor leftRear = hardwareMap.get(DcMotor.class, "leftRear");
@@ -32,28 +29,7 @@ public class Auto extends LinearOpMode {
 
         waitForStart();
 
-        leftFront.setPower(0.5);
-        leftRear.setPower(0.5);
-        rightFront.setPower(0.5);
-        rightRear.setPower(0.5);
 
-        double t = 5000;  // a parameter (in ms) to be optimized through trial and error.
-        ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-        telemetry.addData("Status", "Running");
-        telemetry.update();
-
-        while (timer.time() < t) {
-            telemetry.addData("Status", "Running");
-            telemetry.update();
-        }
-
-        leftFront.setPower(0);
-        leftRear.setPower(0);
-        rightFront.setPower(0);
-        rightRear.setPower(0);
-
-        telemetry.addData("Status", "Terminated");
-        telemetry.update();
     }
 }
