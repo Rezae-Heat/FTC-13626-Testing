@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous
 class AutoFromRowTwoToBackstage extends LinearOpMode {
@@ -28,6 +29,37 @@ class AutoFromRowTwoToBackstage extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
+
+        double movementOneTime = 2000;  // this duration parameter (in ms) should be tuned through trial and error.
+        ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
+        leftFront.setPower(1);
+        leftRear.setPower(1);
+        rightFront.setPower(1);
+        rightRear.setPower(1);
+
+        while (timer.time() < movementOneTime) {
+            telemetry.addData("Status", "Running Mvt 1");
+            telemetry.update();
+        }
+
+        telemetry.addData("Status", "Transitioning to Mvt 2");
+        telemetry.update();
+        double movementTwoTime = 2000;  // this duration parameter (in ms) should be tuned through trial and error;
+        timer.reset();
+
+        leftFront.setPower(1);
+        leftRear.setPower(-1);
+        rightFront.setPower(-1);
+        rightRear.setPower(1);
+
+        while (timer.time() < movementTwoTime) {
+            telemetry.addData("Status", "Running Mvt 2");
+            telemetry.update();
+        }
+
+        telemetry.addData("Status", "Dropping Pixels");
+        telemetry.update();
 
 
 
