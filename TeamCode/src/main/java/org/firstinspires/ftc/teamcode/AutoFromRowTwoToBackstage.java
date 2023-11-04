@@ -58,10 +58,33 @@ class AutoFromRowTwoToBackstage extends LinearOpMode {
             telemetry.update();
         }
 
-        telemetry.addData("Status", "Dropping Pixels");
+        leftFront.setPower(0);
+        leftRear.setPower(0);
+        rightFront.setPower(0);
+        rightRear.setPower(0);
+
+        telemetry.addData("Status", "Running Mvt 3 (Dropping Pixels)");
         telemetry.update();
 
+        // insert here the code for automatic transfer and dropping.
 
+        double MovementFourDuration = 2000;
+        timer.reset();
+
+        leftFront.setPower(-0.5);
+        leftRear.setPower(-0.5);
+        rightFront.setPower(-0.5);
+        rightRear.setPower(-0.5);
+
+        while (timer.time() < MovementFourDuration) {
+            telemetry.addData("Status", "Running Mvt 4 (Parking)");
+            telemetry.update();
+        }
+
+        leftFront.setPower(0);
+        leftRear.setPower(0);
+        rightFront.setPower(0);
+        rightRear.setPower(0);
 
     }
 }
