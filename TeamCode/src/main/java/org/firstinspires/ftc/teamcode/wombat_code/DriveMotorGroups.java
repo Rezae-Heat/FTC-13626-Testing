@@ -11,6 +11,7 @@ import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -20,6 +21,7 @@ public class DriveMotorGroups extends LinearOpMode {
     private static final double SLIDER_SENSITIVITY = 20;
     private static final double MAX_SLIDER = 12000;
     private static final double SERVO_INCREMENT = 1;
+    private static boolean presetActive, slidersMoving;
 
     @Override
     public void runOpMode() {
@@ -63,7 +65,8 @@ public class DriveMotorGroups extends LinearOpMode {
         GamepadEx driverOp = new GamepadEx(gamepad1);
         GamepadEx gunnerOp = new GamepadEx(gamepad2);
 
-        double clawAngle = 0, sliderPos = 0;
+        double clawAngle = 0;
+        double sliderPos = 0;
 
         waitForStart();
 
@@ -72,8 +75,76 @@ public class DriveMotorGroups extends LinearOpMode {
 
         servoBaseRight.turnToAngle(0);
 
-        while (!isStopRequested()) {
-            motorIntake.set(-driverOp.getRightY() / 2);
+        if (isStopRequested()) return;
+
+        while (opModeIsActive()) {
+            Thread grabPixel = new Thread(() -> {
+                presetActive = true;
+
+                servoClaw.turnToAngle(22.5);
+                servoPitch.turnToAngle(158.04);
+
+                sleep(500);
+
+                servoBaseLeft.turnToAngle(0);
+                servoBaseRight.turnToAngle(0);
+
+                sleep(1000);
+
+                servoClaw.turnToAngle(45);
+
+                sleep(500);
+
+                servoBaseLeft.turnToAngle(90);
+                servoBaseRight.turnToAngle(90);
+
+                presetActive = false;
+            });
+
+            Thread placePixel = new Thread(() -> {
+                presetActive = true;
+
+                servoPitch.turnToAngle(100);
+
+                sleep(500);
+
+                servoBaseLeft.turnToAngle(101.7);
+                servoBaseRight.turnToAngle(101.7);
+
+                sleep(500);
+
+                servoPitch.turnToAngle(62.1);
+
+                presetActive = false;
+            });
+
+            Thread zeroArm = new Thread(() -> {
+                presetActive = true;
+
+                servoPitch.turnToAngle(100);
+
+                sleep(500);
+
+                servoBaseLeft.setPosition(90);
+                servoBaseRight.setPosition(90);
+
+                sleep(500);
+
+                servoPitch.turnToAngle(158.04);
+
+                slidersMoving = true;
+
+                final int finalSliderPos = 0;
+                motorSliders.setTargetPosition(finalSliderPos);
+
+                while (!motorSliderLeft.atTargetPosition()) {
+                    motorSliders.set(1);
+                }
+
+                motorSliders.set(0);
+
+                slidersMoving = presetActive = false;
+            });
 
 //            Thread launchDrone = new Thread(() -> {
 //                servoDrone.turnToAngle(60);
@@ -85,25 +156,40 @@ public class DriveMotorGroups extends LinearOpMode {
 //
 //            if (gamepad1.back) launchDrone.start();
 
-            double rT = gunnerOp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-            double lT = gunnerOp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+            if (!slidersMoving) {
+                double rT = gunnerOp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
+                double lT = gunnerOp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
 
-            sliderPos += SLIDER_SENSITIVITY * ((sliderPos < MAX_SLIDER ? rT : 0) - (sliderPos > 0 ? lT : 0));
-            motorSliders.setTargetPosition((int) (sliderPos));
-            motorSliders.set(rT - lT);
+                sliderPos += SLIDER_SENSITIVITY * ((sliderPos < MAX_SLIDER ? rT : 0) - (sliderPos > 0 ? lT : 0));
+                motorSliders.setTargetPosition((int) (sliderPos));
+                motorSliders.set(rT - lT);
+            }
 
-            servoPitch.rotateByAngle(SERVO_INCREMENT * gunnerOp.getRightY());
+            if (!presetActive) {
+                if (gunnerOp.getButton(GamepadKeys.Button.A)) {
+                    grabPixel.start(); // Picks up pixel
+                } else if (gunnerOp.getButton(GamepadKeys.Button.Y)) {
+                    placePixel.start(); // Moves arm to placement position, NOTE: Does not actually release pixel that's up to the driver as they need to adjust the height of the sliders and whatnot accordingly.
+                } else if (gunnerOp.getButton(GamepadKeys.Button.B)) {
+                    sliderPos = 0;
+                    zeroArm.start(); // Moves arm back to neutral position and lowers sliders to zero.
+                } else {
+                    servoPitch.rotateByAngle(SERVO_INCREMENT * gunnerOp.getRightY());
 
-            double baseAngleIncrement = SERVO_INCREMENT * gunnerOp.getLeftY();
-            servoBaseLeft.rotateByAngle(baseAngleIncrement);
-            servoBaseRight.rotateByAngle(baseAngleIncrement);
+                    double baseAngleIncrement = SERVO_INCREMENT * gunnerOp.getLeftY();
+                    servoBaseLeft.rotateByAngle(baseAngleIncrement);
+                    servoBaseRight.rotateByAngle(baseAngleIncrement);
 
-            double intakeAngleIncrement = driverOp.getButton(GamepadKeys.Button.DPAD_DOWN) ? SERVO_INCREMENT : (driverOp.getButton(GamepadKeys.Button.DPAD_UP) ? -SERVO_INCREMENT : 0);
-            servoIntakeLeft.rotateByAngle(intakeAngleIncrement);
-            servoIntakeRight.rotateByAngle(intakeAngleIncrement);
+                    double intakeAngleIncrement = driverOp.getButton(GamepadKeys.Button.DPAD_DOWN) ? SERVO_INCREMENT : (driverOp.getButton(GamepadKeys.Button.DPAD_UP) ? -SERVO_INCREMENT : 0);
+                    servoIntakeLeft.rotateByAngle(intakeAngleIncrement);
+                    servoIntakeRight.rotateByAngle(intakeAngleIncrement);
 
-            clawAngle = gunnerOp.getButton(GamepadKeys.Button.DPAD_RIGHT) ? 45 : (gunnerOp.getButton(GamepadKeys.Button.DPAD_LEFT) ? 0 : clawAngle);
-            servoClaw.turnToAngle(clawAngle);
+                    clawAngle = gunnerOp.getButton(GamepadKeys.Button.DPAD_RIGHT) ? 45 : (gunnerOp.getButton(GamepadKeys.Button.DPAD_LEFT) ? 0 : clawAngle);
+                    servoClaw.turnToAngle(clawAngle);
+                }
+            }
+
+            motorIntake.set(-driverOp.getRightY() / 2);
 
             drive.driveRobotCentric(driverOp.getLeftX(), driverOp.getLeftY(), driverOp.getRightX());
 
