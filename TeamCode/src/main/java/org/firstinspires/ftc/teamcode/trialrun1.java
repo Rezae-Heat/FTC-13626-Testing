@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
-
+@TeleOp
 public class trialrun1 extends LinearOpMode {
     @Override
 
@@ -38,8 +38,6 @@ public class trialrun1 extends LinearOpMode {
         while(opModeIsActive()){
             if (gamepad2.x){
                 gripper.setPosition(0.5);
-                leftElbow.setPosition(8);
-                rightElbow.setPosition(0.9);
 
             }
 

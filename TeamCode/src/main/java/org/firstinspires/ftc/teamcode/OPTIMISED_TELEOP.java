@@ -81,7 +81,7 @@ public class OPTIMISED_TELEOP extends OpMode {
         ServoEx leftElbow = new SimpleServo(
                 hardwareMap, "leftElbow", 0, 255);
         ServoEx wrist = new SimpleServo(
-                hardwareMap, "wrist", 0, 270);
+                hardwareMap, "wrist", 0, 255);
         //wrist = hardwareMap.get(CRServo.class,"wrist");
         //gripper = hardwareMap.get(CRServo.class, "claw");
         ServoEx latch = new SimpleServo(
@@ -140,7 +140,7 @@ public class OPTIMISED_TELEOP extends OpMode {
         double backLeftPower = (y - x + rx) / denominator;
         double frontRightPower = (y - x - rx) / denominator;
         double backRightPower = (y + x - rx) / denominator;
-        double speedMod = 2.05;  // only for testing purposes - not final driver configuration
+        double speedMod = 1;  // only for testing purposes - not final driver configuration
 
         frontLeftMotor.setPower(frontLeftPower * speedMod);
         backLeftMotor.setPower(backLeftPower * speedMod);
@@ -164,12 +164,10 @@ public class OPTIMISED_TELEOP extends OpMode {
         wrist.setInverted(true);
         gripper.setInverted(true);
         telemetry.addData("timer", spacer.time());
-        if (gamepad1.right_bumper){
-            speedMod =1;
-        }
+
         // Intake run
-        intake.setPower(gamepad2.left_stick_y);
-        if (gamepad2.a){ // Intake
+        intake.setPower(gamepad1.right_stick_y);
+        if (gamepad1.a){ // Intake
 
             leftElbow.turnToAngle(45);
             spacer.startTime();
@@ -191,7 +189,7 @@ public class OPTIMISED_TELEOP extends OpMode {
             leftspool.setVelocity(MAX_SLIDE_VELOCITY);
             rightspool.setVelocity(MAX_SLIDE_VELOCITY);
         }
-        else if (gamepad2.x) { // transfer
+        else if (gamepad1.x) { // transfer
 
             latch.turnToAngle(0);
             gripper.turnToAngle(205);
@@ -216,7 +214,7 @@ public class OPTIMISED_TELEOP extends OpMode {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            leftElbow.turnToAngle(45);
+            leftElbow.turnToAngle(45); //FIXME: Another thread needs to be called for sleep, otherwise the robot stops
             try {
                 Thread.sleep(800);
             } catch (InterruptedException e) {
@@ -235,11 +233,11 @@ public class OPTIMISED_TELEOP extends OpMode {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            wrist.turnToAngle(75);
-            leftElbow.turnToAngle(165);
+            wrist.turnToAngle(95);
+            leftElbow.turnToAngle(150);
                             spacer.reset();
         } // end of loop
-        else if (gamepad2.y) { // transfer
+        else if (gamepad1.y) { // transfer
 
             latch.turnToAngle(0);
             gripper.turnToAngle(205);
@@ -252,7 +250,7 @@ public class OPTIMISED_TELEOP extends OpMode {
             leftElbow.turnToAngle(0);
             wrist.turnToAngle(0);
             try {
-                Thread.sleep(500);
+                Thread.sleep(800);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -287,8 +285,14 @@ public class OPTIMISED_TELEOP extends OpMode {
             leftElbow.turnToAngle(165);
             spacer.reset();
         } // end of loop
-        if (gamepad2.right_stick_button){
-            gripper.turnToAngle(205);
+        if (gamepad1.right_stick_button){
+            gripper.turnToAngle(195);
+        }
+        if (gamepad1.left_bumper){
+            speedMod=4;
+        }
+        if (gamepad1.right_trigger>0.5){
+            drone.setPosition(0.25);
         }
     }
 

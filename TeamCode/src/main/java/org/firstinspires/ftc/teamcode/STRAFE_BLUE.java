@@ -27,10 +27,10 @@ public class STRAFE_BLUE extends LinearOpMode {
 
         waitForStart();
 
-        leftFront.setPower(1);
-        leftRear.setPower(-1);
-        rightFront.setPower(-1);
-        rightRear.setPower(1);
+        leftFront.setPower(-1);
+        leftRear.setPower(1);
+        rightFront.setPower(1);
+        rightRear.setPower(-1);
 
         double t = 8000;  // a parameter (in ms) to be optimized through trial and error.
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
@@ -39,6 +39,16 @@ public class STRAFE_BLUE extends LinearOpMode {
         telemetry.update();
 
         while (timer.time() < t) {
+            telemetry.addData("Status", "Running");
+            telemetry.update();
+        }
+
+        leftFront.setPower(1);
+        leftRear.setPower(-1);
+        rightFront.setPower(1);
+        rightRear.setPower(-1);
+
+        while(timer.time() < 8500) {
             telemetry.addData("Status", "Running");
             telemetry.update();
         }

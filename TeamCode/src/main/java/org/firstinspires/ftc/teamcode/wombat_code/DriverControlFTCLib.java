@@ -36,8 +36,7 @@ public class DriverControlFTCLib extends LinearOpMode {
         motorSliderLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         motorSliderRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
 
-        motorSliderLeft.stopAndResetEncoder();
-        motorSliderRight.stopAndResetEncoder();
+
 
         motorSliderLeft.setRunMode(Motor.RunMode.PositionControl);
         motorSliderRight.setRunMode(Motor.RunMode.PositionControl);

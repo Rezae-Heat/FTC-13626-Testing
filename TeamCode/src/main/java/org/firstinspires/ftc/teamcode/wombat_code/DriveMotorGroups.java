@@ -41,7 +41,6 @@ public class DriveMotorGroups extends LinearOpMode {
 
         motorSliders.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         motorSliders.setRunMode(Motor.RunMode.PositionControl);
-        motorSliders.stopAndResetEncoder();
 
         Motor motorIntake = new Motor(hardwareMap, "motorIntake");
 

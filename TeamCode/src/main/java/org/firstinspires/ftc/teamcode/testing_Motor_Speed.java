@@ -10,9 +10,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
-
+@TeleOp (group = "CompTELEOP",name = "spooltesting")
 public class testing_Motor_Speed extends LinearOpMode {
-
+    private DcMotorEx leftspool = null;
+    private DcMotorEx rightspool = null;
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -22,8 +23,10 @@ public class testing_Motor_Speed extends LinearOpMode {
         DcMotorEx backLeftMotor = (DcMotorEx) hardwareMap.dcMotor.get("leftRear");
         DcMotorEx frontRightMotor = (DcMotorEx) hardwareMap.dcMotor.get("rightFront");
         DcMotorEx backRightMotor = (DcMotorEx) hardwareMap.dcMotor.get("rightRear");
-        CRServo axon = hardwareMap.crservo.get("axon");
-        DcMotorEx frontLeftMotor = (DcMotorEx) hardwareMap.dcMotor.get("lefFront");
+        DcMotorEx frontLeftMotor = (DcMotorEx) hardwareMap.dcMotor.get("leftFront");
+
+        leftspool = hardwareMap.get(DcMotorEx.class, "leftspool");
+        rightspool = hardwareMap.get(DcMotorEx.class, "rightspool");
 // add motors as required
 
 
@@ -38,18 +41,14 @@ public class testing_Motor_Speed extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-           frontLeftMotor.setPower(gamepad1.left_stick_y);
-           frontRightMotor.setPower(gamepad1.right_stick_y);
-           backLeftMotor.setPower(gamepad2.left_stick_y);
-           backRightMotor.setPower(gamepad2.right_stick_y);
-           axon.setPower(gamepad1.left_stick_x);
+           leftspool.setPower(gamepad1.left_stick_y);
+           rightspool.setPower(-gamepad1.left_stick_y);
+
+           telemetry.addData("leftspoolpos",leftspool.getCurrentPosition());
+           telemetry.addData("rightspoolpos", rightspool.getCurrentPosition());
 
 
-           telemetry.addData("front left speed", frontLeftMotor.getVelocity());
-           telemetry.addData("front right speed", frontRightMotor.getVelocity());
-           telemetry.addData("back left speed", backLeftMotor.getVelocity());
-           telemetry.addData("back right speed", backRightMotor.getVelocity());
-           telemetry.addData("Axon direction", axon.getDirection());
+
 
 
 
