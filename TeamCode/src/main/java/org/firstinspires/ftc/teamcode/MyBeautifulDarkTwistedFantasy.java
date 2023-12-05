@@ -21,9 +21,7 @@ public class MyBeautifulDarkTwistedFantasy extends LinearOpMode {
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(3);
 
     private static final double SLIDER_VELOCITY = 2000;
-    public static final int SLIDER_HIGH = 770;
-    public static final int SLIDER_MID = 450;
-    public static final int SLIDER_LOW = 200;
+    private static final int SLIDER_LOW = 200, SLIDER_MID = 450, SLIDER_HIGH = 770;
 
     private static final double INTAKE_OFFSET = -3;
 
