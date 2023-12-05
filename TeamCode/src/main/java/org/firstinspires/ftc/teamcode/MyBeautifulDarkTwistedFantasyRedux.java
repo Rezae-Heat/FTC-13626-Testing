@@ -9,15 +9,12 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @TeleOp(name="Graduation", group="Driver Control")
-public class MyBeautifulDarkTwistedFantasy extends LinearOpMode {
+public class MyBeautifulDarkTwistedFantasyRedux extends LinearOpMode {
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(3);
 
     private static final double SLIDER_VELOCITY = 2000;
@@ -37,16 +34,19 @@ public class MyBeautifulDarkTwistedFantasy extends LinearOpMode {
 
             MecanumDrive driveTrain = new MecanumDrive(fL, fR, bL, bR);
 
-            DcMotorEx motorSliderLeft = hardwareMap.get(DcMotorEx.class, "leftSpool");
-            DcMotorEx motorSliderRight = hardwareMap.get(DcMotorEx.class, "rightSpool");
+            MotorEx motorSliderLeft = new MotorEx(hardwareMap, "leftSpool");
+            MotorEx motorSliderRight = new MotorEx(hardwareMap, "rightSpool");
 
-            motorSliderLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorSliderRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motorSliderLeft.setInverted(true);
 
-            motorSliderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motorSliderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motorSliderLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+            motorSliderRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
 
-            motorSliderLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+            motorSliderLeft.setRunMode(Motor.RunMode.PositionControl);
+            motorSliderRight.setRunMode(Motor.RunMode.PositionControl);
+
+            motorSliderLeft.setPositionTolerance(14);
+            motorSliderRight.setPositionTolerance(14);
 
             MotorEx motorIntake = new MotorEx(hardwareMap, "intake");
 
@@ -97,9 +97,6 @@ public class MyBeautifulDarkTwistedFantasy extends LinearOpMode {
                     motorSliderLeft.setTargetPosition(-10);
                     motorSliderRight.setTargetPosition(-10);
 
-                    motorSliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorSliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
                     motorSliderLeft.setVelocity(SLIDER_VELOCITY);
                     motorSliderRight.setVelocity(SLIDER_VELOCITY);
 
@@ -130,9 +127,6 @@ public class MyBeautifulDarkTwistedFantasy extends LinearOpMode {
 
                     motorSliderLeft.setTargetPosition(SLIDER_LOW);
                     motorSliderRight.setTargetPosition(SLIDER_LOW);
-
-                    motorSliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorSliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                     motorSliderLeft.setVelocity(SLIDER_VELOCITY);
                     motorSliderRight.setVelocity(SLIDER_VELOCITY);
@@ -170,9 +164,6 @@ public class MyBeautifulDarkTwistedFantasy extends LinearOpMode {
                     motorSliderLeft.setTargetPosition(SLIDER_MID);
                     motorSliderRight.setTargetPosition(SLIDER_MID);
 
-                    motorSliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorSliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
                     motorSliderLeft.setVelocity(SLIDER_VELOCITY);
                     motorSliderRight.setVelocity(SLIDER_VELOCITY);
 
@@ -208,9 +199,6 @@ public class MyBeautifulDarkTwistedFantasy extends LinearOpMode {
 
                     motorSliderLeft.setTargetPosition(SLIDER_HIGH);
                     motorSliderRight.setTargetPosition(SLIDER_HIGH);
-
-                    motorSliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorSliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                     motorSliderLeft.setVelocity(SLIDER_VELOCITY);
                     motorSliderRight.setVelocity(SLIDER_VELOCITY);
@@ -254,16 +242,14 @@ public class MyBeautifulDarkTwistedFantasy extends LinearOpMode {
                 driveTrain.driveRobotCentric(driverOp.getLeftX(), driverOp.getLeftY(), driverOp.getRightX());
 
                 // region Telemetry Logging
-                telemetry.addData("Slider Target Pos", motorSliderLeft.getTargetPosition());
-                telemetry.addData("Slider Current Pos", motorSliderLeft.getCurrentPosition());
                 telemetry.addData("Slider Velocity", motorSliderLeft.getVelocity());
+                telemetry.addData("Slider Current Pos", motorSliderLeft.getCurrentPosition());
+                telemetry.addData("Slider Reached Target Pos?", motorSliderLeft.atTargetPosition());
 
                 String[] servoNames = {"Base Left", "Base Right", "\nIntake Left", "Intake Right", "\nPitch", "Claw"};
                 ServoEx[] servos = {servoBaseLeft, servoBaseRight, servoIntakeLeft, servoIntakeRight, servoPitch, servoClaw};
 
-                for (int i = 0; i < servoNames.length; i++) {
-                    telemetry.addData(servoNames[i], servos[i].getAngle());
-                }
+                for (int i = 0; i < servoNames.length; i++) { telemetry.addData(servoNames[i], servos[i].getAngle());}
 
                 telemetry.update();
                 // endregion
