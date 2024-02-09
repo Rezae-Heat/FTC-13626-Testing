@@ -16,12 +16,12 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@TeleOp(name="Graduation", group="Driver Control")
+@TeleOp(name="Trial_code_less_resources", group="Driver Control")
 public class MyBeautifulDarkTwistedFantasy extends LinearOpMode {
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(3);
 
     private static final double SLIDER_VELOCITY = 2000;
-    private static final int SLIDER_LOW = 200, SLIDER_MID = 450, SLIDER_HIGH = 770;
+    private static final int SLIDER_ZERO=-20, SLIDER_LOW = 200, SLIDER_MID = 450, SLIDER_HIGH = 790;
 
     private static final double INTAKE_OFFSET = -3;
 
@@ -37,8 +37,8 @@ public class MyBeautifulDarkTwistedFantasy extends LinearOpMode {
 
             MecanumDrive driveTrain = new MecanumDrive(fL, fR, bL, bR);
 
-            DcMotorEx motorSliderLeft = hardwareMap.get(DcMotorEx.class, "leftSpool");
-            DcMotorEx motorSliderRight = hardwareMap.get(DcMotorEx.class, "rightSpool");
+            DcMotorEx motorSliderLeft = hardwareMap.get(DcMotorEx.class, "leftspool");
+            DcMotorEx motorSliderRight = hardwareMap.get(DcMotorEx.class, "rightspool");
 
             motorSliderLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motorSliderRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -54,7 +54,7 @@ public class MyBeautifulDarkTwistedFantasy extends LinearOpMode {
             ServoEx servoPitch = new SimpleServo(hardwareMap, "wrist", 0, 180);
             ServoEx servoLatch = new SimpleServo(hardwareMap, "latch", 0, 180);
             ServoEx servoDrone = new SimpleServo(hardwareMap, "drone", 0, 60);
-            ServoEx servoBaseLeft = new SimpleServo(hardwareMap, "leftElbow", 0, 255);
+            ServoEx servoBaseLeft = new SimpleServo(hardwareMap, "leftElbow", 0, 255); // check the angle limits on the base servos
             ServoEx servoBaseRight = new SimpleServo(hardwareMap, "rightElbow", 0, 255);
             ServoEx servoIntakeLeft = new SimpleServo(hardwareMap, "leftIntake", 0, 180);
             ServoEx servoIntakeRight = new SimpleServo(hardwareMap, "rightIntake", 0, 180);
@@ -66,6 +66,7 @@ public class MyBeautifulDarkTwistedFantasy extends LinearOpMode {
             servoIntakeRight.setInverted(true);
 
             GamepadEx driverOp = new GamepadEx(gamepad1);
+            GamepadEx hangandplane = new GamepadEx(gamepad2);
 
             waitForStart();
 
@@ -229,7 +230,7 @@ public class MyBeautifulDarkTwistedFantasy extends LinearOpMode {
                     servoDrone.turnToAngle(0);
                 };
 
-                if (gamepad1.back) threadPool.submit(launchDrone);
+                if (gamepad2.back) threadPool.submit(launchDrone);
 
                 if (!presetActive) {
                     if (driverOp.getButton(GamepadKeys.Button.A)) {
@@ -242,9 +243,12 @@ public class MyBeautifulDarkTwistedFantasy extends LinearOpMode {
                         threadPool.submit(grabPixelHigh);
                     } else {
                         if (driverOp.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
-                            servoClaw.turnToAngle(150);
+                           servoBaseRight.turnToAngle(0);
+                            servoBaseLeft.turnToAngle(0);
                         } else if (driverOp.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON)) {
-                            servoClaw.turnToAngle(0);
+                            //servoClaw.turnToAngle(0);
+                            servoBaseLeft.turnToAngle(255);
+                            servoBaseRight.turnToAngle(255);
                         }
                     }
                 }

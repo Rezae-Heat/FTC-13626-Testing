@@ -43,10 +43,16 @@ public class DriveConstants {
      * used. The default values were selected with inches in mind. Road runner uses radians for
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
+     *
+
+    30 cm - 12 inchs
+    * 6 inches - 15cm
+    * 9.6cm
+    *
      */
-    public static double WHEEL_RADIUS = 1.88976; // in
+    public static double WHEEL_RADIUS = 1.88976; // in 1.92
     public static double GEAR_RATIO = 1.5; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 11.61417; // in
+    public static double TRACK_WIDTH = 11.61417; // in 8.8
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -76,7 +82,7 @@ public class DriveConstants {
     public static RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIR =
             RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
     public static RevHubOrientationOnRobot.UsbFacingDirection USB_FACING_DIR =
-            RevHubOrientationOnRobot.UsbFacingDirection.UP;
+            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
 
     public static double encoderTicksToInches(double ticks) {

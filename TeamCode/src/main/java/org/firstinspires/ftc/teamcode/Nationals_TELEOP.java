@@ -16,6 +16,8 @@ import com.qualcomm.robotcore.hardware.CRServo;
 
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @TeleOp (group = "CompTELEOP",name = "NATIONALS:OPTIMISED_TELEOP")
 public class Nationals_TELEOP extends OpMode {
@@ -34,7 +36,10 @@ public class Nationals_TELEOP extends OpMode {
     private ServoEx wrist;
     private ServoEx gripper;
     private ServoImplEx drone;
-    private ServoEx latch;
+    private ServoEx latch; // connected to servo port 4
+    private CRServo leftHang;
+    private CRServo rightHang;
+
 
 
     public static final int MAX_SLIDE_VELOCITY = 2000;
@@ -86,21 +91,36 @@ public class Nationals_TELEOP extends OpMode {
         //wrist = hardwareMap.get(CRServo.class,"wrist");
         //gripper = hardwareMap.get(CRServo.class, "claw");
         ServoEx latch = new SimpleServo(
-                hardwareMap, "latch", 0, 270);
+                hardwareMap, "latch", 0, 270); // latch needs to be plugged in
         ServoEx gripper= new SimpleServo(
                 hardwareMap, "claw", 0, 255);
         //latch = hardwareMap.get(CRServo.class,"latch");
 
         ServoImplEx drone = (ServoImplEx) hardwareMap.servo.get("drone");
         //telemetry.addLine("Ready to Rock n Roll")
+        CRServo leftHang = hardwareMap.crservo.get("lefthang");
+        CRServo rightHang = hardwareMap.crservo.get("righthang");
 
-        latch.turnToAngle(180);
+
+
+       // latch.turnToAngle(180);
         gripper.setInverted(true);
-        gripper.turnToAngle(205);
+       // gripper.turnToAngle(205);
+       //2 leftElbow.turnToAngle(45);
+        //rightElbow.turnToAngle(45);
+        ServoEx servoIntakeLeft = new SimpleServo(hardwareMap, "leftIntake", 0, 300);
+        ServoEx servoIntakeRight = new SimpleServo(hardwareMap, "rightIntake", 0, 300);
+       // servoIntakeLeft.turnToAngle(300);
+        //servoIntakeRight.turnToAngle(servoIntakeLeft.getAngle());
+        latch.turnToAngle(79.6);
+
+        gripper.turnToAngle(255);
+        leftElbow.turnToAngle(60);
     }
 
     @Override
     public void loop() {
+
             leftspool = hardwareMap.get(DcMotorEx.class, "leftspool");
             rightspool = hardwareMap.get(DcMotorEx.class, "rightspool");
 
@@ -112,9 +132,11 @@ public class Nationals_TELEOP extends OpMode {
             intake = hardwareMap.get(DcMotorEx.class, "intake");
             ServoEx rightElbow = new SimpleServo(
                     hardwareMap, "rightElbow", 0, 255);
-            rightElbow.setInverted(true);
+            rightElbow.setInverted(false);
+
             ServoEx leftElbow = new SimpleServo(
                     hardwareMap, "leftElbow", 0, 255);
+
             ServoEx wrist = new SimpleServo(
                     hardwareMap, "wrist", 0, 270);
             //wrist = hardwareMap.get(CRServo.class,"wrist");
@@ -123,10 +145,14 @@ public class Nationals_TELEOP extends OpMode {
                     hardwareMap, "latch", 0, 270);
             ServoEx gripper= new SimpleServo(
                     hardwareMap, "claw", 0, 255);
-            //latch = hardwareMap.get(CRServo.class,"latch");
 
+        CRServo leftHang = hardwareMap.crservo.get("lefthang");
+        CRServo rightHang = hardwareMap.crservo.get("righthang");
             ServoImplEx drone = (ServoImplEx) hardwareMap.servo.get("drone");
             telemetry.addLine("Ready to Rock n Roll");
+        ServoEx servoIntakeLeft = new SimpleServo(hardwareMap, "leftIntake", 0, 300);
+        ServoEx servoIntakeRight = new SimpleServo(hardwareMap, "rightIntake", 0, 300);
+
 
             //<Drive code>
             double y = -gamepad1.left_stick_y;// Remember, Y stick value is reversed
@@ -149,7 +175,7 @@ public class Nationals_TELEOP extends OpMode {
             backRightMotor.setPower(backRightPower * speedMod);
             double totalCurrentDT = frontLeftMotor.getCurrentPosition();
 
-            frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
             backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
             backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -160,8 +186,8 @@ public class Nationals_TELEOP extends OpMode {
             backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             //</Drive code>
 
-            ElapsedTime spacer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
-            leftElbow.setInverted(true);
+            ElapsedTime spacer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+            leftElbow.setInverted(false);
             wrist.setInverted(true);
             gripper.setInverted(true);
             telemetry.addData("timer", spacer.time());
@@ -170,12 +196,18 @@ public class Nationals_TELEOP extends OpMode {
             }
             // Intake run
             intake.setPower(gamepad1.right_stick_y);
-
+                telemetry.addData("rightelbow",rightElbow.getAngle());
+                telemetry.addData("leftelbow",leftElbow.getAngle());
+                telemetry.addData("rightspool",rightspool.getCurrentPosition());
+                telemetry.addData("leftspool",leftspool.getCurrentPosition());
+                latch.turnToAngle(77);
               if (gamepad1.a){ // Intake
-                gripper.turnToAngle(180);
-                leftElbow.turnToAngle(90);
-                wrist.turnToAngle(190);
-                spacer.startTime();
+                  latch.turnToAngle(78);
+                gripper.turnToAngle(255);
+                leftElbow.turnToAngle(55);
+                //rightElbow.turnToAngle(45);
+
+                wrist.turnToAngle(205);
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
@@ -184,9 +216,9 @@ public class Nationals_TELEOP extends OpMode {
                 wrist.turnToAngle(220);
                 spacer.reset();
 
-                latch.turnToAngle(180);
-                leftspool.setTargetPosition(-10);
-                rightspool.setTargetPosition(-10); // FIXME: i highly recommend adding a separate threaded subsystem handler to prevent the spool motors from self combusting
+
+                leftspool.setTargetPosition(0);
+                rightspool.setTargetPosition(0); // FIXME: i highly recommend adding a separate threaded subsystem handler to prevent the spool motors from self combusting
 
                 leftspool.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 rightspool.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -195,60 +227,15 @@ public class Nationals_TELEOP extends OpMode {
                 rightspool.setVelocity(MAX_SLIDE_VELOCITY);
             }
             else if (gamepad1.x) { // transfer - low pos
-
-                latch.turnToAngle(0);
-                  leftElbow.turnToAngle(45);
-                  wrist.turnToAngle(200);
-                spacer.startTime();
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                  gripper.turnToAngle(0);
+                    gripper.turnToAngle(250);
+                  latch.turnToAngle(0);
                   try {
-                      Thread.sleep(1000);
+                      Thread.sleep(500);
                   } catch (InterruptedException e) {
                       throw new RuntimeException(e);
                   }
-
-                leftElbow.turnToAngle(90);
-
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                  wrist.turnToAngle(230);
-                leftElbow.turnToAngle(90); //FIXME: Another thread needs to be called for sleep, otherwise the robot stops
-                try {
-                    Thread.sleep(800);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                leftspool.setTargetPosition(SLIDE_LOW);
-                rightspool.setTargetPosition(SLIDE_LOW);
-
-                leftspool.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                rightspool.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                leftspool.setVelocity(MAX_SLIDE_VELOCITY);
-                rightspool.setVelocity(MAX_SLIDE_VELOCITY);
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                wrist.turnToAngle(90);
-                leftElbow.turnToAngle(175);
-                gripper.turnToAngle(0);
-                spacer.reset();
-            } // end of loop
-            else if (gamepad1.y) { // transfer
-
-                  latch.turnToAngle(0);
-                  leftElbow.turnToAngle(45);
-                  wrist.turnToAngle(200);
+                  leftElbow.turnToAngle(0);
+                  wrist.turnToAngle(255);
                   spacer.startTime();
                   try {
                       Thread.sleep(1000);
@@ -257,12 +244,12 @@ public class Nationals_TELEOP extends OpMode {
                   }
                   gripper.turnToAngle(0);
                   try {
-                      Thread.sleep(1000);
+                      Thread.sleep(500);
                   } catch (InterruptedException e) {
                       throw new RuntimeException(e);
                   }
 
-                  leftElbow.turnToAngle(90);
+                  leftElbow.turnToAngle(50);
 
                   try {
                       Thread.sleep(200);
@@ -270,7 +257,69 @@ public class Nationals_TELEOP extends OpMode {
                       throw new RuntimeException(e);
                   }
                   wrist.turnToAngle(230);
-                  leftElbow.turnToAngle(90); //FIXME: Another thread needs to be called for sleep, otherwise the robot stops
+                  leftElbow.turnToAngle(55); //FIXME: Another thread needs to be called for sleep, otherwise the robot stops
+                  try {
+                      Thread.sleep(800);
+                  } catch (InterruptedException e) {
+                      throw new RuntimeException(e);
+                  }
+                  leftspool.setTargetPosition(SLIDE_LOW);
+                  rightspool.setTargetPosition(SLIDE_LOW);
+
+                  leftspool.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                  rightspool.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                  leftspool.setVelocity(MAX_SLIDE_VELOCITY);
+                  rightspool.setVelocity(MAX_SLIDE_VELOCITY);
+                  try {
+                      Thread.sleep(1000);
+                  } catch (InterruptedException e) {
+                      throw new RuntimeException(e);
+                  }
+
+                  leftElbow.turnToAngle(145);
+                  try {
+                      Thread.sleep(1000);
+                  } catch (InterruptedException e) {
+                      throw new RuntimeException(e);
+                  }
+                  wrist.turnToAngle(150);
+                  gripper.turnToAngle(0);
+                  spacer.reset();
+            } // end of loop
+            else if (gamepad1.y) { // transfer
+
+                  gripper.turnToAngle(250);
+                  latch.turnToAngle(0);
+                  try {
+                      Thread.sleep(500);
+                  } catch (InterruptedException e) {
+                      throw new RuntimeException(e);
+                  }
+                  leftElbow.turnToAngle(0);
+                  wrist.turnToAngle(255);
+                  spacer.startTime();
+                  try {
+                      Thread.sleep(1000);
+                  } catch (InterruptedException e) {
+                      throw new RuntimeException(e);
+                  }
+                  gripper.turnToAngle(0);
+                  try {
+                      Thread.sleep(500);
+                  } catch (InterruptedException e) {
+                      throw new RuntimeException(e);
+                  }
+
+                  leftElbow.turnToAngle(50);
+
+                  try {
+                      Thread.sleep(200);
+                  } catch (InterruptedException e) {
+                      throw new RuntimeException(e);
+                  }
+                  wrist.turnToAngle(230);
+                  leftElbow.turnToAngle(55); //FIXME: Another thread needs to be called for sleep, otherwise the robot stops
                   try {
                       Thread.sleep(800);
                   } catch (InterruptedException e) {
@@ -285,19 +334,31 @@ public class Nationals_TELEOP extends OpMode {
                   leftspool.setVelocity(MAX_SLIDE_VELOCITY);
                   rightspool.setVelocity(MAX_SLIDE_VELOCITY);
                   try {
-                      Thread.sleep(500);
+                      Thread.sleep(1000);
                   } catch (InterruptedException e) {
                       throw new RuntimeException(e);
                   }
-                  wrist.turnToAngle(90);
-                  leftElbow.turnToAngle(175);
+
+                  leftElbow.turnToAngle(145);
+                  try {
+                      Thread.sleep(1000);
+                  } catch (InterruptedException e) {
+                      throw new RuntimeException(e);
+                  }
+                  wrist.turnToAngle(150);
                   gripper.turnToAngle(0);
                   spacer.reset();
             } // end of loop
               else if (gamepad1.b) {
+                  gripper.turnToAngle(250);
                   latch.turnToAngle(0);
-                  leftElbow.turnToAngle(45);
-                  wrist.turnToAngle(200);
+                  try {
+                      Thread.sleep(500);
+                  } catch (InterruptedException e) {
+                      throw new RuntimeException(e);
+                  }
+                  leftElbow.turnToAngle(0);
+                  wrist.turnToAngle(255);
                   spacer.startTime();
                   try {
                       Thread.sleep(1000);
@@ -306,12 +367,12 @@ public class Nationals_TELEOP extends OpMode {
                   }
                   gripper.turnToAngle(0);
                   try {
-                      Thread.sleep(1000);
+                      Thread.sleep(500);
                   } catch (InterruptedException e) {
                       throw new RuntimeException(e);
                   }
 
-                  leftElbow.turnToAngle(90);
+                  leftElbow.turnToAngle(50);
 
                   try {
                       Thread.sleep(200);
@@ -319,7 +380,7 @@ public class Nationals_TELEOP extends OpMode {
                       throw new RuntimeException(e);
                   }
                   wrist.turnToAngle(230);
-                  leftElbow.turnToAngle(90); //FIXME: Another thread needs to be called for sleep, otherwise the robot stops
+                  leftElbow.turnToAngle(55); //FIXME: Another thread needs to be called for sleep, otherwise the robot stops
                   try {
                       Thread.sleep(800);
                   } catch (InterruptedException e) {
@@ -334,27 +395,38 @@ public class Nationals_TELEOP extends OpMode {
                   leftspool.setVelocity(MAX_SLIDE_VELOCITY);
                   rightspool.setVelocity(MAX_SLIDE_VELOCITY);
                   try {
-                      Thread.sleep(500);
+                      Thread.sleep(1000);
                   } catch (InterruptedException e) {
                       throw new RuntimeException(e);
                   }
-                  wrist.turnToAngle(90);
-                  leftElbow.turnToAngle(175);
+
+                  leftElbow.turnToAngle(145);
+                  try {
+                      Thread.sleep(1000);
+                  } catch (InterruptedException e) {
+                      throw new RuntimeException(e);
+                  }
+                  wrist.turnToAngle(150);
                   gripper.turnToAngle(0);
                   spacer.reset();
               }
+        leftHang.setPower(gamepad2.left_stick_y);
+        rightHang.setPower(gamepad2.right_stick_y);
+
+        if (gamepad1.left_stick_button){ // 255 all the way down
+                gripper.turnToAngle(0); // opens gripper
 
 
-        if (gamepad1.left_stick_button){
-                gripper.turnToAngle(150); // opens gripper
                 //leftElbow.turnToAngle(180);
-                //wrist.turnToAngle(0); // scoring side
+               // wrist.turnToAngle(255); // scoring side
 
             }
             if (gamepad1.right_stick_button){
-                gripper.turnToAngle(0); // closes gripper
+              //  wrist.turnToAngle(0); // 0 all the way up
+                gripper.turnToAngle(255); // closes gripper
+
                 // leftElbow.turnToAngle(45);
-               // wrist.turnToAngle(230); // intake side
+
 
             }
             if (gamepad1.left_bumper){
